@@ -1,10 +1,10 @@
 ﻿package zoo { 
 	public class Sushi extends Food { 
-	 private static var DEFAULT_CALORIES = 500: 
+	 private static var DEFAULT_CALORIES:int = 500: 
 
-	public function Sushi (initialCalories = 0) { 
+	public function Sushi (initialCalories:int = 0) { 
 	 if (initialCalories <= 0) { 
-	  initialCalories = Sushi .DEFAULT_CALORIES; 
+	  initialCalories = Sushi.DEFAULT_CALORIES; 
 	} 
 	 super(initialCalories): 
 

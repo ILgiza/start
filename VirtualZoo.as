@@ -1,8 +1,9 @@
-﻿package zoo { 
+﻿package{ 
 	import flash.display.Sprite;
+	import zoo.*;
 	
 	public class VirtualZoo extends Sprite { 
-		private var pet; 
+		private var pet:VirtualPet; 
 		
 		public function VirtualZoo ( ) { 
 		pet = new VirtualPet("Murka");

@@ -6,16 +6,16 @@
 		private static var maxNameLength = 20; 
 		private static var maxCalories = 2000; 
 		private static var caloriesPerSecond = 100; 
-		private var petName; 
-		private var currentCalories = VirtualPet.maxCalories/2; 
-		private var digestlntervallD; 
+		private var petName:String;
+		private var currentCalories:int = VirtualPet.maxCalories/2; 
+		private var digestlntervallD:int;
 		
-		public function VirtualPet (name) { 
+		public function VirtualPet (name:String):void { 
 			setName(name); 
 			digestlntervalID = setlnterval(digest, 1000); 
 		} 
 		
-		public function eat (foodltem) { 	
+		public function eat (foodltem:Food):void { 	
 		  if (currentCalories == 0) { 
 		    trace(getName( ) + " is dead. You can't feed it."); 
 			return; 
@@ -28,7 +28,7 @@
   	} 
 } 
 
-var newCurrentCalories = currentCalories + foodItem.getCalories( ); 
+var newCurrentCalories:int = currentCalories + foodItem.getCalories( ); 
 if (newCurrentCalories > VirtualPet.maxCalories) { 
   currentCalories = VirtualPet.maxCalories; 
 } else { 
@@ -41,7 +41,7 @@ trace(getName( ) + " ate some " + foodItem.getName( ) + "."
 public function getHunger ( ) { 
  return currentCalories / VirtualPet.maxCalories; 
 } 
-public function setName (newName) { 
+public function setName (newName:String):void { 
   // Если длина заданного нового имени больше maxNameLength символов... 
   if (newName.length > VirtualPet.maxNameLength) { 
   // ...обрезать имя 
@@ -55,10 +55,10 @@ public function setName (newName) {
   // Присвоить новое проверенное имя переменной petName 
  petName = newName; 
 } 
-public function getName ( ) { 
+public function getName ( ):String { 
   return petName; 
 } 
-private function digest ( ) { 
+private function digest:voud ( ) { 
    // Если в результате потребления очередной порции калорий 
    // значение переменной currentCalories животного 
    // станет равным 0 или меньше... 
