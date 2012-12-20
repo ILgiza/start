@@ -1,8 +1,13 @@
 ﻿package zoo { 
-	public class Virtual Zoo { 
+	import flash.display.Sprite;
+	
+	public class VirtualZoo extends Sprite { 
 		private var pet; 
-		public function Virtual Zoo ( ) { 
-		   this.pet = new Virtual Pet("Murka"); 
+		
+		public function VirtualZoo ( ) { 
+		pet = new VirtualPet("Murka");
+		pet.eat(new Apple());
+		pet.eat(new Sushi()); 
 			} 
 		} 
 	} 
