@@ -1,85 +1,133 @@
 ﻿package zoo { 
-	import flash.utils.setInterval;
-	import flash.utils.clearInterval;
+	import flash.utils.*;
+	import flash.events.*;
+	
+	public class VirtualPet extends EventDispatcer {
+		public static const NAME_CHANGE:String = "NAME CHANGE";
+		public static const STATE_CHANGE:String = "STATE_CHANGE"; 
 		
-	internal class VirtualPet { 
+		public static const PETSTATE_FULL:int = 0; 
+		public static const PETSTATE_HUNGRY:int = 1; 
+		public static const PETSTATE_STARVING:int = 2; 
+		public static const PETSTATE_DEAD:int = 3; 
+
 		private static var maxNameLength = 20; 
 		private static var maxCalories = 2000; 
 		private static var caloriesPerSecond = 100; 
+		private static var defaultName:String = "Unnamed Pet";
+		
 		private var petName:String;
-		private var currentCalories:int = VirtualPet.maxCalories/2; 
-		private var digestlntervallD:int;
-		
+		private var currentCalories:int;
+		private var petState:int;
+		private var digestTimer:Timer;
 		public function VirtualPet (name:String):void { 
-			setName(name); 
-			digestlntervalID = setlnterval(digest, 1000); 
+		setName(name); 
+		setCalories(VirtualPet.maxCalories/2); 
+		}
+		public function start ( ):void { 
+		digestTimer = new Timer(1OOO. 0); 
+		digestTimer.addEventListener(TimerEvent.TIMER, digestTimerListener); 
+		digestTimer.start( ); 
+	} 
+        public function stop ( ):void { 
+		if (digestTimer != null) { 
+		digestTimer.stop( ); 
 		} 
+	} 
+	
 		
-		public function eat (foodltem:Food):void { 	
-		  if (currentCalories == 0) { 
-		    trace(getName( ) + " is dead. You can't feed it."); 
-			return; 
-		} 
-	if (foodltem is Apple) { 
-	  if (foodltem.hasWorm( )) { 
-	   trace("The " + foodltem.getName( ) + " had a worm.." + getName( ) 
+	public function setName (newName:String):void { 
+	if (newName. indexOf("") == 0) { 
+	throw new VirtualPetNameException( ); 
+	} else if (newName == "") { 
+	throw new VirtualPetInsufficientDataException( ); 
+	} else if (newName.length > VirtualPet.maxNameLength) { 	
+	throw new VirtualPetExcessDataException( );
+	}
+ 	petName = newName; 
+	dispatchEvent(new Event(VirtualPet.NAME_CHANGE)); 
+} 
+	public function getName ( ):String { 
+	if (petName == null) { 
+	   return VirtualPet.defaultName; 
+		} else { 
+		return petName; 
+	} 
+}	 
+		public function eat (foodItem:Food):void { 
+		if (petState == VirtualPet.PETSTATE_DEAD) { 
+			trace(getName( ) + " is dead. You can't feed it.");
+		return;
+} 
+		 
+	if (foodItem is Apple) { 
+	  if (Apple(foodItem).hasWorm( )) { 
+	   trace("The " + foodItem.getName( ) + " had a worm.." + getName( ) 
 	   + " didn't eat it."); 
      return; 
   	} 
 } 
+	trace(getName( ) + " ate the " + foodItem.getName( ) 
+			+ " (" + foodItem.getCalories( ) + " calories).");
+		setCalories(getCalories( ) + foodItem.getCalories( )); 
+		}	 
+	private function setCalories (newCurrentCalories:int):void { 
+		if (newCurrentCalories > VirtualPet.maxCalories) { 
+  	currentCalories = VirtualPet.maxCalories: 
+		} else if (newCurrentCalories < 0) { 
+	currentCalories = 0; 
+			} else { 
+	currentCalories = newCurrentCalories;
+	} 
+		var caloriePercentage:int = Math.floor(getHunger( )*100); 
 
-var newCurrentCalories:int = currentCalories + foodItem.getCalories( ); 
-if (newCurrentCalories > VirtualPet.maxCalories) { 
-  currentCalories = VirtualPet.maxCalories; 
-} else { 
-  currentCalories = newCurrentCalories; 
+	trace(getName( ) + "has" + currentCalories + "calories" 
+  			+ "(" +caloriePercentage +"% of its food) remaining."); 
+		if(caloriePercentage == 0) {  
+		if (getPetState( ) != VirtualPet.PETSTATE_DEAD) { 
+			die( ); 
+		}
+	} else if (caloriePercentage < 20) { 
+	if (getPetState( ) != VirtualPet.PETSTATE_STARVING) { 
+	setPetState( VirtualPet. PETSTATE_STARVING); 
+	} 
+		} else if (caloriePercentage < 50) { 
+	if (getPetState( ) != VirtualPet. PETSTATE_HUNGRY) { 
+	setPetState(VirtualPet. PETSTATE_HUNGRY); 	
+	} 
+		} else { 
+		if (getPetState( ) != VirtualPet. PETSTATE_FULL) { 
+	setPetState(VirtualPet.PETSTATE_FULL) ; 
 } 
-trace(getName( ) + " ate some " + foodItem.getName( ) + "." 
-  + " It now has " + currentCalories + " calories remaining."); 
-} 
+	} 	
+		public function getCalories ( ):int { 
+	return currentCalories; 
+			} 
+	public function getHunger ( ):Number { 
+	return currentCalories / VirtualPet.maxCalories; 
+		} 
+	private function die ( ):void { 
+		stop( ); 
+	setPetState(VirtualPet.PETSTATE_DEAD); 
+		trace(getName( ) + " has died."); 
+		} 
 
-public function getHunger ( ) { 
- return currentCalories / VirtualPet.maxCalories; 
+	private function digest ( ):void { 
+	trace(getName( ) + " is digesting..."); 
+	setCalories(getCalories( ) - VirtualPet.caloriesPerSecond); 
+	}	 
+	private function setPetState (newState:int):void { 
+	if (newState == petState) { 
+		return; 
+	} 
+	petState = newState;  
+	dispatchEvent(new Event(VirtualPet.STATE_CHANGE)); 
+	} 
+	public function getPetState ( ):int { 
+	return petState; 
+	} 
+	private function digestTimerListener (e:TimerEvent):void { 
+		digest( ); 
+		} 
+	} 
 } 
-public function setName (newName:String):void { 
-  // Если длина заданного нового имени больше maxNameLength символов... 
-  if (newName.length > VirtualPet.maxNameLength) { 
-  // ...обрезать имя 
-  newName = newName.substr(0, VirtualPet.maxNameLength); 
-} else if (newName == "") { 
-  // ...в противном случае, если заданное новое имя является 
-  // пустой строкой, завершить выполнение метода, не изменяя 
-  // значения переменной petName 
-  return; 
-} 
-  // Присвоить новое проверенное имя переменной petName 
- petName = newName; 
-} 
-public function getName ( ):String { 
-  return petName; 
-} 
-private function digest:voud ( ) { 
-   // Если в результате потребления очередной порции калорий 
-   // значение переменной currentCalories животного 
-   // станет равным 0 или меньше... 
-   if (currentCalories - VirtualPet.caloriesPerSecond <= 0) { 
-     // ...прекратить вызов метода digest( ) 
-    clearlnterval(digestlntervalID); 
-     // После чего очистить желудок животного 
-    currentCalories = 0; 
-    // и сообщить о смерти животного 
-   trace(getName( ) + " has died."); 
-} else { 
-       // ...иначе употребить оговоренное количество калорий 
-       currentCalories -= VirtualPet.caloriesPerSecond; 
-       
-	   // и сообщить о новом состоянии животного 
-       trace(getName( ) + " digested some food. It now has " 
-           + currentCalories + " calories remaining."); 
-      } 
-    } 
-  } 
-} 
-
-
-

@@ -6,9 +6,9 @@
 	 if (initialCalories <= 0) { 
 	  initialCalories = Sushi.DEFAULT_CALORIES; 
 	} 
-	 super(initialCalories): 
+	 super(initialCalories);
 
-	 setName("Sushi"): 
+	 setName("Sushi");
 	} 
   } 
 } 

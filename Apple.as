@@ -8,11 +8,11 @@
 	initialCalories = Apple.DEFAULT_CALORIES; 
    } 
 	super(initialCalories); 
-	wormlnApple = Math.random( ) >= .5; 	
+	wormInApple = Math.random( ) >= .5; 	
 	setName("Apple"); 
   } 
 	public function hasWorm ( ):Boolean { 
-	 return wormlnApple; 
+	 return wormInApple; 
 	} 
   } 
 } 
